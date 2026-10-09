@@ -5,8 +5,8 @@ from tenacity import RetryError, retry, retry_if_exception_type, stop_after_atte
 
 from notifier.config import TelegramConfig
 from notifier.exceptions import TelegramNotificationError
-from notifier.platforms.telegram import send_photo_to_telegram, send_text_to_telegram
-from notifier.schemas.telegram import TelegramResponse
+from notifier.telegram.messages import send_photo_to_telegram, send_text_to_telegram
+from notifier.telegram.schemas import TelegramResponse
 
 
 class NotifierClient(AsyncClient):

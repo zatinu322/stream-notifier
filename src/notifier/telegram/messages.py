@@ -1,12 +1,12 @@
 from typing import TYPE_CHECKING
 
 from notifier.config import TelegramConfig
-from notifier.schemas.telegram import (
+from notifier.shared import raise_for_status
+from notifier.telegram.schemas import (
     TelegramResponse,
     TelegramSendMessageRequest,
     TelegramSendPhotoRequest,
 )
-from notifier.shared import raise_for_status
 
 if TYPE_CHECKING:
     from notifier.client import NotifierClient
