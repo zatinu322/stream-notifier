@@ -35,7 +35,6 @@ class NotifierClient(AsyncClient):
         stop=stop_after_attempt(3),
         wait=wait_fixed(3),
         retry=(retry_if_exception_type(RequestError)),
-        reraise=True,
     )
     async def send_request(
         self,

@@ -1,8 +1,12 @@
+import json
 from typing import TYPE_CHECKING
+
+from telegram_markdown import parse_markdown_to_entities  # type: ignore[import-not-found]
 
 from notifier.config import TelegramConfig
 from notifier.shared import raise_for_status
 from notifier.telegram.schemas import (
+    TelegramMessageEntity,
     TelegramResponse,
     TelegramSendMessageRequest,
     TelegramSendPhotoRequest,
@@ -19,14 +23,19 @@ async def send_photo_to_telegram(
     image = telegram_config.image
     add_multipart = isinstance(image, bytes)
 
+    plain_text, telegram_entities = parse_markdown_to_entities(telegram_config.message_text)
+
     api_token = telegram_config.api_token.get_secret_value()
     url = f"https://api.telegram.org/bot{api_token}/sendPhoto"
     payload = TelegramSendPhotoRequest(
         chat_id=telegram_config.chat_id,
         has_spoiler=telegram_config.has_spoiler,
-        caption=telegram_config.message_text,
+        caption=plain_text,
         photo=None if add_multipart else image,
-        parse_mode=None,  # TODO: Add formatting
+        caption_entities=json.dumps([
+            TelegramMessageEntity.model_validate(entity).model_dump(exclude_none=True)
+            for entity in telegram_entities
+        ]),
     ).model_dump(exclude_none=True)
 
     files = None
@@ -49,12 +58,17 @@ async def send_text_to_telegram(
     telegram_config: TelegramConfig,
     client: "NotifierClient",
 ) -> TelegramResponse:
+    plain_text, telegram_entities = parse_markdown_to_entities(telegram_config.message_text)
+
     api_token = telegram_config.api_token.get_secret_value()
     url = f"https://api.telegram.org/bot{api_token}/sendMessage"
     payload = TelegramSendMessageRequest(
         chat_id=telegram_config.chat_id,
-        text=telegram_config.message_text,
-        parse_mode=None,  # TODO: Add formatting
+        text=plain_text,
+        entities=json.dumps([
+            TelegramMessageEntity.model_validate(entity).model_dump(exclude_none=True)
+            for entity in telegram_entities
+        ]),
     ).model_dump(exclude_none=True)
 
     response = await client.send_request(method="POST", url=url, payload=payload)

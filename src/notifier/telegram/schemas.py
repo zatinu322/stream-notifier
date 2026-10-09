@@ -6,11 +6,37 @@ from pydantic import BaseModel, Field
 from notifier.shared import request_model_config, response_model_config
 
 
+class TelegramUser(BaseModel):
+    id: int
+    is_bot: bool
+    first_name: str = ""
+    username: str = ""
+
+    model_config = response_model_config
+
+
+class TelegramMessageEntity(BaseModel):
+    type: str
+    offset: int
+    length: int
+
+    url: str | None = None
+    user: TelegramUser | None = None
+    language: str | None = None
+
+    custom_emoji_id: str | None = None
+    unix_time: int | None = None
+    date_time_format: str | None = None
+
+    model_config = response_model_config
+
+
 class TelegramSendMessageRequest(BaseModel):
     chat_id: int | str
 
     text: str = Field(min_length=1, max_length=4096)
-    parse_mode: Literal["MarkdownV2", "Markdown", "HTML"] | None = None
+    entities: str | None = None
+    """JSON-строка."""
 
     model_config = request_model_config
 
@@ -22,18 +48,10 @@ class TelegramSendPhotoRequest(BaseModel):
     has_spoiler: bool = False
 
     caption: str = Field("", max_length=1024)
-    parse_mode: Literal["MarkdownV2", "Markdown", "HTML"] | None = None
+    caption_entities: str | None = None
+    """JSON-строка."""
 
     model_config = request_model_config
-
-
-class TelegramUser(BaseModel):
-    id: int
-    is_bot: bool
-    first_name: str = ""
-    username: str = ""
-
-    model_config = response_model_config
 
 
 class TelegramChat(BaseModel):

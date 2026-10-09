@@ -217,6 +217,7 @@ source = { virtual = "." }
 dependencies = [
     { name = "httpx" },
     { name = "pydantic" },
+    { name = "telegram-markdown-entities" },
     { name = "tenacity" },
 ]
 
@@ -229,11 +230,21 @@ dev = [
 requires-dist = [
     { name = "httpx", specifier = ">=0.28.1" },
     { name = "pydantic", specifier = ">=2.13.5" },
+    { name = "telegram-markdown-entities", specifier = ">=0.1.1" },
     { name = "tenacity", specifier = ">=9.2.1" },
 ]
 
 [package.metadata.requires-dev]
 dev = [{ name = "pytest", specifier = ">=9.0.2" }]
+
+[[package]]
+name = "telegram-markdown-entities"
+version = "0.1.1"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/e5/af/104800c2cc2d90683da200e26013a5e57da667c42cc2472e8cf4b0375070/telegram_markdown_entities-0.1.1.tar.gz", hash = "sha256:37fba9058a5c48847fca50362b9f554f3c875c7f1da838053797c5f4fc98ad8c", size = 16654, upload-time = "2025-09-14T14:18:46.72Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/01/92/57bc2fb0c576a4554e06b7f8d54c3ecffa07b8149f03bbd429958db9c469/telegram_markdown_entities-0.1.1-py3-none-any.whl", hash = "sha256:7628812f8d38242cb2d5abb3e542c7f4e1dd07f4602dc0d345bb13a79b2af93b", size = 14459, upload-time = "2025-09-14T14:18:45.548Z" },
+]
 
 [[package]]
 name = "tenacity"
