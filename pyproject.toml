@@ -1,0 +1,23 @@
+[project]
+name = "stream-notifier"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "httpx>=0.28.1",
+    "pydantic>=2.13.5",
+    "tenacity>=9.2.1",
+]
+
+[tool.mypy]
+disallow_untyped_defs = true  # Disallows defining functions without type annotations or with incomplete type annotations
+python_version = 3.13
+plugins = [
+  "pydantic.mypy",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.0.2",
+]
