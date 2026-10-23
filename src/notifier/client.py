@@ -43,5 +43,4 @@ class NotifierClient(AsyncClient):
         payload: dict[str, Any],
         files: dict[str, Any] | None = None,
     ) -> Response:
-        print(f"Request: {method}, {url}, {payload}")
         return await self.request(method, url, data=payload, files=files)
