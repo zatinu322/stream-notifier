@@ -18,6 +18,16 @@ plugins = [
   "pydantic.mypy",
 ]
 
+[[tool.mypy.overrides]]
+module = [
+    "httpx",
+    "environs",
+    "tenacity",
+    "telegram_markdown",
+]
+ignore_missing_imports = true
+
+
 [dependency-groups]
 dev = [
     "environs>=15.2.0",

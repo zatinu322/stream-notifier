@@ -3,9 +3,9 @@
 import asyncio
 from pathlib import Path
 
-from environs import Env  # type: ignore[import-not-found]
+from environs import Env
 
-from notifier import NotifierClient, TelegramConfig
+from notifier import DiscordConfig, NotifierClient, TelegramConfig
 
 TEST_MARKDOWN = """**жирный** и __подчёркнутый__
 
@@ -47,9 +47,18 @@ async def main() -> None:
         image=image,
         has_spoiler=True,
     )
-    async with NotifierClient(telegram_config=tg_config) as client:
-        await client.send_telegram()
+    discord_config = DiscordConfig(
+        api_token=env.str("DISCORD_BOT_TOKEN"),
+        channel_id="1276511059678728226",
+        message_text="Test",
+    )
+    async with NotifierClient(
+        telegram_config=tg_config,
+        discord_config=discord_config,
+    ) as client:
+        # await client.send_telegram()
         # print(response)  # has id and nickname in response
+        await client.send_discord()
 
 
 if __name__ == "__main__":

@@ -1,10 +1,11 @@
-from httpx import HTTPStatusError, Response  # type: ignore[import-not-found]
+from httpx import HTTPStatusError, Response
 from pydantic import ConfigDict
 
 from .exceptions import NotifierHTTPStatusError
 
 request_model_config = ConfigDict(
     extra="forbid",
+    validate_default=True,
 )
 
 response_model_config = ConfigDict(

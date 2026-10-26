@@ -1,7 +1,11 @@
-from httpx import Response  # type: ignore[import-not-found]
+from httpx import Response
 
 
 class TelegramNotificationError(Exception):
+    ...
+
+
+class DiscordNotificationError(Exception):
     ...
 
 

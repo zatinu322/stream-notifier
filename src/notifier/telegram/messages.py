@@ -1,7 +1,7 @@
 import json
 from typing import TYPE_CHECKING
 
-from telegram_markdown import parse_markdown_to_entities  # type: ignore[import-not-found]
+from telegram_markdown import parse_markdown_to_entities
 
 from notifier.config import TelegramConfig
 from notifier.shared import raise_for_status
@@ -44,10 +44,10 @@ async def send_photo_to_telegram(
             "photo": ("image.png", image, "image/png"),
         }
 
-    response = await client.send_request(
+    response = await client.request(
         method="POST",
         url=url,
-        payload=payload,
+        data=payload,
         files=files,
     )
     raise_for_status(response)
@@ -71,6 +71,6 @@ async def send_text_to_telegram(
         ]),
     ).model_dump(exclude_none=True)
 
-    response = await client.send_request(method="POST", url=url, payload=payload)
+    response = await client.request(method="POST", url=url, data=payload)
     raise_for_status(response)
     return TelegramResponse.model_validate(response.json())
