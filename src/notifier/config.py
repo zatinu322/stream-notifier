@@ -1,25 +1,13 @@
 from pydantic import BaseModel, Field, HttpUrl, PositiveInt, SecretStr
 
 
-class DiscordEmbedImage(BaseModel):
-    url: HttpUrl
-    """Attachment or direct url."""
-    description: str = ""
-    """Image description."""
-
-
-class DiscordEmbed(BaseModel):
-    title: str = ""
+class DiscordEmbedConfig(BaseModel):
+    title: str
     """Embed title."""
-    description: str = ""
+    description: str
     """Embed description."""
-    image: DiscordEmbedImage | None = None
+    image: HttpUrl | bytes | None = None
     """Embed image."""
-
-    roles_to_metion: list[str] = Field(default_factory=list)
-    """Roles to be mentioned in Discord message."""
-    users_to_metion: list[str] = Field(default_factory=list)
-    """Users to be mentioned in Discord message."""
 
 
 class DiscordConfig(BaseModel):
@@ -31,11 +19,16 @@ class DiscordConfig(BaseModel):
     message_text: str = ""
     """Discord message text."""
 
-    message_image: HttpUrl | bytes | None = None
+    image: bytes | None = None
     """Discord message image."""
 
-    embed: DiscordEmbed | None = None
+    embed: DiscordEmbedConfig | None = None
     """Discord embed."""
+
+    roles_to_mention: list[str] = Field(default_factory=list)
+    """Roles to be mentioned in Discord message."""
+    users_to_mention: list[str] = Field(default_factory=list)
+    """Users to be mentioned in Discord message."""
 
 
 class TelegramConfig(BaseModel):

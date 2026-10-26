@@ -1,20 +1,20 @@
 from typing import Literal
 
-from pydantic import BaseModel, Field, HttpUrl
+from pydantic import BaseModel, Field
 
-from notifier.shared import request_model_config
+from notifier.shared import request_model_config, response_model_config
 
 
 class DiscordEmbedImage(BaseModel):
-    url: HttpUrl | str
+    url: str
     description: str = ""
     width: int | None = None
     height: int | None = None
 
 
 class DiscordEmbed(BaseModel):
-    title: str = ""
-    description: str = ""
+    title: str
+    description: str
     type: Literal["rich", "image"] = "rich"
     image: DiscordEmbedImage | None = None
 
@@ -26,3 +26,16 @@ class DiscordSendMessageRequest(BaseModel):
     embeds: list[DiscordEmbed] = Field(default_factory=list)
 
     model_config = request_model_config
+
+
+class DiscordSendMessageResponse(BaseModel):
+    id: str
+    """Message ID."""
+    type: int
+    """Message type."""
+    channel_id: str
+    """Discord channel ID."""
+    content: str
+    """Message text."""
+
+    model_config = response_model_config

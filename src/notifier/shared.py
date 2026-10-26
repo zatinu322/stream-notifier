@@ -21,5 +21,5 @@ def raise_for_status(response: Response) -> None:
     except HTTPStatusError:
         raise NotifierHTTPStatusError(
             response=response,
-            message="Telegram response error.",
+            message="HTTP status error.",
         )
