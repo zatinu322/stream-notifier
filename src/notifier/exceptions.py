@@ -1,11 +1,19 @@
 from httpx import Response
 
 
-class TelegramNotificationError(Exception):
+class NotificationError(Exception):
     ...
 
 
-class DiscordNotificationError(Exception):
+class TelegramNotificationError(NotificationError):
+    ...
+
+
+class DiscordNotificationError(NotificationError):
+    ...
+
+
+class VKNotificationError(NotificationError):
     ...
 
 

@@ -62,3 +62,7 @@ class TelegramConfig(BaseModel):
     """Hide image with spoiler."""
 
     model_config = model_config
+
+
+class VKConfig(BaseModel):
+    model_config = model_config
