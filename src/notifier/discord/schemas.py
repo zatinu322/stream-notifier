@@ -35,7 +35,7 @@ class DiscordSendMessageResponse(BaseModel):
     """Message type."""
     channel_id: str
     """Discord channel ID."""
-    content: str
+    content: str = ""
     """Message text."""
 
     model_config = response_model_config

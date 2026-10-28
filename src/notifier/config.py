@@ -1,4 +1,10 @@
-from pydantic import BaseModel, Field, HttpUrl, PositiveInt, SecretStr
+from typing import Self
+
+from pydantic import BaseModel, ConfigDict, Field, HttpUrl, PositiveInt, SecretStr, model_validator
+
+model_config = ConfigDict(
+    extra="forbid",
+)
 
 
 class DiscordEmbedConfig(BaseModel):
@@ -8,6 +14,8 @@ class DiscordEmbedConfig(BaseModel):
     """Embed description."""
     image: HttpUrl | bytes | None = None
     """Embed image."""
+
+    model_config = model_config
 
 
 class DiscordConfig(BaseModel):
@@ -30,6 +38,14 @@ class DiscordConfig(BaseModel):
     users_to_mention: list[str] = Field(default_factory=list)
     """Users to be mentioned in Discord message."""
 
+    model_config = model_config
+
+    @model_validator(mode="after")
+    def validate_message_content(self) -> Self:
+        if not (self.message_text or self.image or self.embed):
+            raise ValueError("Message content can not be empty.")
+        return self
+
 
 class TelegramConfig(BaseModel):
     api_token: SecretStr
@@ -44,3 +60,5 @@ class TelegramConfig(BaseModel):
     """Notification image."""
     has_spoiler: bool = False
     """Hide image with spoiler."""
+
+    model_config = model_config

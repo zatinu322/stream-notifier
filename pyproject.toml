@@ -24,8 +24,12 @@ module = [
     "environs",
     "tenacity",
     "telegram_markdown",
+    "pytest",
 ]
 ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
 
 
 [dependency-groups]

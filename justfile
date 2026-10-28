@@ -7,3 +7,6 @@ lint:
 
 format:
     uvx ruff check --fix ./src
+
+test:
+    uv run pytest -vv

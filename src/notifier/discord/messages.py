@@ -20,13 +20,13 @@ MultipartFormData = dict[str, tuple[str, bytes, str]]
 
 def _get_discord_embeds(
     embed_config: DiscordEmbedConfig | None,
-    multipart_data: dict[str, tuple[str, bytes, str]],
+    multipart_data: MultipartFormData,
 ) -> list[DiscordEmbed]:
     if not embed_config:
         return []
 
     embed_type = "rich"
-    embed_image_url = None
+    embed_image_url = ""
     if embed_image := embed_config.image:
         embed_type = "image"
         if isinstance(embed_image, bytes):
@@ -40,14 +40,14 @@ def _get_discord_embeds(
             title=embed_config.title,
             description=embed_config.description,
             type=embed_type,
-            image=DiscordEmbedImage(url=embed_image_url),
+            image=DiscordEmbedImage(url=embed_image_url) if embed_image_url else None,
         ),
     ]
 
 
 def _get_message_text(discord_config: DiscordConfig) -> str:
-    user_mentions = [f"<@{uid}>" for uid in discord_config.users_to_mention]
-    role_mentions = [f"<@&{rid}>" for rid in discord_config.roles_to_mention]
+    user_mentions = [f"<@{user_id}>" for user_id in discord_config.users_to_mention]
+    role_mentions = [f"<@&{role_id}>" for role_id in discord_config.roles_to_mention]
     mentions = " ".join(user_mentions + role_mentions)
     return f"{mentions}\n{discord_config.message_text}" if mentions else discord_config.message_text
 
