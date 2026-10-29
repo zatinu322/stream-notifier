@@ -1,4 +1,6 @@
-from collections.abc import Awaitable
+from collections.abc import Awaitable, Callable
+
+from pydantic import BaseModel
 
 from notifier import (
     DiscordConfig,
@@ -17,15 +19,15 @@ REQUESTS_TIMEOUT = 60
 
 async def _send_notification(
     report: PlatformReport,
-    send_coroutine: Awaitable,
+    send_coroutine: Callable[..., Awaitable[BaseModel]],
     ignored_platforms: list[Platform],
 ) -> None:
-    if report.platform in ignored_platforms:
+    if report.name in ignored_platforms:
         report.status = Status.IGNORED
         return
 
     try:
-        response = await send_coroutine
+        response = await send_coroutine()
         report.status = Status.SUCCESS
         report.response = response.model_dump()
     except (NotifierHTTPStatusError, NotificationError) as e:
@@ -43,21 +45,21 @@ async def send_notifications(
         ignored_platforms = []
 
     report = SendReport(
-        telegram=PlatformReport(platform=Platform.TELEGRAM),
-        discord=PlatformReport(platform=Platform.DISCORD),
-        vk=PlatformReport(platform=Platform.VK),
+        telegram=PlatformReport(name=Platform.TELEGRAM),
+        discord=PlatformReport(name=Platform.DISCORD),
+        vk=PlatformReport(name=Platform.VK),
     )
 
     async with NotifierClient(
         discord_config=discord_config,
         telegram_config=telegram_config,
-        # vk_config=vk_config,
+        # vk_config=vk_config,  # TODO: Add vk support
         timeout=REQUESTS_TIMEOUT,
     ) as client:
         for platform_report, coroutine in [
-            (report.telegram, client.send_telegram()),
-            (report.discord, client.send_discord()),
-            # (report.vk, client.send_vk),
+            (report.telegram, client.send_telegram),
+            (report.discord, client.send_discord),
+            # (report.vk, client.send_vk), TODO: Add vk support
         ]:
             await _send_notification(platform_report, coroutine, ignored_platforms)
 
