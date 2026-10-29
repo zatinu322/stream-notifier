@@ -3,9 +3,9 @@ from typing import TYPE_CHECKING
 
 from telegram_markdown import parse_markdown_to_entities
 
-from notifier.config import TelegramConfig
-from notifier.shared import raise_for_status
-from notifier.telegram.schemas import (
+from stream_notifier.config import TelegramConfig
+from stream_notifier.shared import raise_for_status
+from stream_notifier.telegram.schemas import (
     TelegramMessageEntity,
     TelegramResponse,
     TelegramSendMessageRequest,
@@ -13,7 +13,7 @@ from notifier.telegram.schemas import (
 )
 
 if TYPE_CHECKING:
-    from notifier.client import NotifierClient
+    from stream_notifier.client import NotifierClient
 
 
 async def send_photo_to_telegram(

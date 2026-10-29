@@ -3,17 +3,17 @@ from typing import TYPE_CHECKING
 
 from pydantic import HttpUrl
 
-from notifier.config import DiscordConfig, DiscordEmbedConfig
-from notifier.discord.schemas import (
+from stream_notifier.config import DiscordConfig, DiscordEmbedConfig
+from stream_notifier.discord.schemas import (
     DiscordEmbed,
     DiscordEmbedImage,
     DiscordSendMessageRequest,
     DiscordSendMessageResponse,
 )
-from notifier.shared import raise_for_status
+from stream_notifier.shared import raise_for_status
 
 if TYPE_CHECKING:
-    from notifier.client import NotifierClient
+    from stream_notifier.client import NotifierClient
 
 MultipartFormData = dict[str, tuple[str, bytes, str]]
 

@@ -1,7 +1,7 @@
 import pytest
 from pydantic import HttpUrl
 
-from notifier.config import DiscordConfig, DiscordEmbedConfig
+from stream_notifier.config import DiscordConfig, DiscordEmbedConfig
 
 from ..helpers import _get_discord_embed, format_report, get_platform_configs
 from ..schemas import Notification, NotifierSettings, PlatformReport, PlatformSettings, SendReport

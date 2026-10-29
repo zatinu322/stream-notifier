@@ -2,7 +2,7 @@ from collections.abc import Awaitable, Callable
 
 from pydantic import BaseModel
 
-from notifier import (
+from stream_notifier import (
     DiscordConfig,
     NotificationError,
     NotifierClient,

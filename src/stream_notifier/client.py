@@ -1,12 +1,12 @@
 from httpx import AsyncClient, RequestError
 from tenacity import RetryError, retry, retry_if_exception_type, stop_after_attempt, wait_fixed
 
-from notifier.config import DiscordConfig, TelegramConfig
-from notifier.discord.messages import send_discord_notification
-from notifier.discord.schemas import DiscordSendMessageResponse
-from notifier.exceptions import DiscordNotificationError, TelegramNotificationError
-from notifier.telegram.messages import send_photo_to_telegram, send_text_to_telegram
-from notifier.telegram.schemas import TelegramResponse
+from stream_notifier.config import DiscordConfig, TelegramConfig
+from stream_notifier.discord.messages import send_discord_notification
+from stream_notifier.discord.schemas import DiscordSendMessageResponse
+from stream_notifier.exceptions import DiscordNotificationError, TelegramNotificationError
+from stream_notifier.telegram.messages import send_photo_to_telegram, send_text_to_telegram
+from stream_notifier.telegram.schemas import TelegramResponse
 
 
 class NotifierClient(AsyncClient):

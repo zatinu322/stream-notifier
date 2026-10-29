@@ -1,7 +1,7 @@
 import yaml
 from pydantic import HttpUrl
 
-from notifier.config import DiscordConfig, DiscordEmbedConfig, TelegramConfig, VKConfig
+from stream_notifier.config import DiscordConfig, DiscordEmbedConfig, TelegramConfig, VKConfig
 
 from .schemas import Notification, NotifierSettings, SendReport
 from .types import Status

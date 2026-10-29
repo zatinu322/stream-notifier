@@ -1,6 +1,6 @@
 import asyncio
 
-from extras import (
+from stream_notifier.extras import (
     NotifierSettings,
     Platform,
     format_report,

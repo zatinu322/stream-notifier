@@ -3,7 +3,7 @@ from typing import Literal
 
 from pydantic import BaseModel, Field
 
-from notifier.shared import request_model_config, response_model_config
+from stream_notifier.shared import request_model_config, response_model_config
 
 
 class TelegramUser(BaseModel):

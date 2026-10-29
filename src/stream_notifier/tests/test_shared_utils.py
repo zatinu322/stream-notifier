@@ -1,8 +1,8 @@
 import pytest
 from httpx import Request, Response
 
-from notifier.exceptions import NotifierHTTPStatusError
-from notifier.shared import raise_for_status
+from stream_notifier.exceptions import NotifierHTTPStatusError
+from stream_notifier.shared import raise_for_status
 
 REQUEST = Request(
     url="https://example.com",

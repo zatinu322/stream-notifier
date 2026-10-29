@@ -1,6 +1,6 @@
 import pytest
 
-from notifier.config import DiscordConfig, DiscordEmbedConfig
+from stream_notifier.config import DiscordConfig, DiscordEmbedConfig
 
 from ..messages import MultipartFormData, _get_discord_embeds, _get_message_text
 from ..schemas import DiscordEmbed, DiscordEmbedImage
