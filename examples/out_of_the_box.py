@@ -14,7 +14,7 @@ async def main() -> None:
     # load api tokens and chat IDs
     settings = NotifierSettings()
     # load notification config
-    notification = load_notification_from_yaml("notification.yaml")
+    notification = load_notification_from_yaml("examples/notification.yaml")
     # generate platform configs
     telegram_config, discord_config, vk_config = get_platform_configs(settings, notification)
 
@@ -23,7 +23,7 @@ async def main() -> None:
         discord_config=discord_config,
         telegram_config=telegram_config,
         # vk_config=vk_config,  # TODO: add vk support
-        ignored_platforms=[Platform.TELEGRAM, Platform.DISCORD, Platform.VK],
+        ignored_platforms=[Platform.VK],
     )
 
     # show pretty report

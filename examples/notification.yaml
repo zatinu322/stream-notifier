@@ -1,8 +1,17 @@
-text:
-image:
-image_spoiler:
-embed_title:
-embed_description:
-embed_image:
+text: |
+  Stream **started**!
+# supports markdown formatting
+
+image: examples/example.png
+# image path or url
+image_spoiler: false
+
+embed_title: Stream started!
+embed_description: I'm waiting for you.
+embed_image: "https://example.com/"
+# image path or url
+
 roles_to_mention:
+  - "1270388891739750584"
 users_to_mention:
+  - "273944928604913664"
