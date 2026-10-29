@@ -35,3 +35,11 @@ Install pre-commit hooks:
 ```sh
 uvx pre-commit install
 ```
+
+Optionally you can create [.env](./examples/.env.example) and [notification config](./examples/notification.yaml).
+
+You are set up and ready! Run example code with:
+```sh
+cp examples/out_of_the_box.py src/main.py
+uv run src/main.py
+```
