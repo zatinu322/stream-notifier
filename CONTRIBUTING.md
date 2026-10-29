@@ -36,7 +36,29 @@ Install pre-commit hooks:
 uvx pre-commit install
 ```
 
-Optionally you can create [.env](./examples/.env.example) and [notification config](./examples/notification.yaml).
+Optionally you can create [.env](./examples/.env.example) and [notification config](./examples/notification.yaml):
+
+```env
+DISCORD__API_TOKEN=
+DISCORD__CHAT_ID=
+
+TELEGRAM__API_TOKEN=
+TELEGRAM__CHAT_ID=
+
+VK__API_TOKEN=
+VK__CHAT_ID=
+```
+```yaml
+text: Message text
+image: Url or path to image
+image_spoiler: Hide image with spoiler (Telegram)
+embed_title: Discord embed title
+embed_description: Discord embed description
+embed_image: Url or path to image
+roles_to_mention: Discord role ID's to mention in message
+users_to_mention: Discord user ID's to mention in message
+```
+
 
 You are set up and ready! Run example code with:
 ```sh
