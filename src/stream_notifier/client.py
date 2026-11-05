@@ -27,22 +27,16 @@ class NotifierClient(AsyncClient):
         self.vk_config = vk_config
 
     async def send_discord(self) -> DiscordSendMessageResponse:
-        if not self.discord_config:
-            raise DiscordNotificationError("No discord config provided.")
-
         try:
-            return await send_discord_notification(self.discord_config, self)  # TODO: remove config
+            return await send_discord_notification(self)
         except (RequestError, RetryError) as e:
             raise DiscordNotificationError from e
 
     async def send_telegram(self) -> TelegramResponse:
-        if not self.telegram_config:
-            raise TelegramNotificationError("No Telegram config provided.")
-
         try:
-            if self.telegram_config.image:
-                return await send_photo_to_telegram(self.telegram_config, self)  # TODO: remove config
-            return await send_text_to_telegram(self.telegram_config, self)
+            if self.telegram_config and self.telegram_config.image:
+                return await send_photo_to_telegram(self)
+            return await send_text_to_telegram(self)
         except (RequestError, RetryError) as e:
             raise TelegramNotificationError from e
 

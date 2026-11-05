@@ -14,7 +14,7 @@ from stream_notifier import (
 from .schemas import PlatformReport, SendReport
 from .types import Platform, Status
 
-REQUESTS_TIMEOUT = 60
+REQUESTS_TIMEOUT = 15
 
 
 async def _send_notification(

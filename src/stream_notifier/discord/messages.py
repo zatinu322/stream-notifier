@@ -10,6 +10,7 @@ from stream_notifier.discord.schemas import (
     DiscordSendMessageRequest,
     DiscordSendMessageResponse,
 )
+from stream_notifier.exceptions import DiscordNotificationError
 from stream_notifier.shared import raise_for_status
 
 if TYPE_CHECKING:
@@ -52,23 +53,23 @@ def _get_message_text(discord_config: DiscordConfig) -> str:
     return f"{mentions}\n{discord_config.message_text}" if mentions else discord_config.message_text
 
 
-async def send_discord_notification(
-    discord_config: DiscordConfig,
-    client: "NotifierClient",
-) -> DiscordSendMessageResponse:
-    multipart_data: MultipartFormData = {}
-    embeds = _get_discord_embeds(discord_config.embed, multipart_data)
+async def send_discord_notification(client: "NotifierClient") -> DiscordSendMessageResponse:
+    if not client.discord_config:
+        raise DiscordNotificationError("No discord config provided.")
 
-    if image := discord_config.image:
+    multipart_data: MultipartFormData = {}
+    embeds = _get_discord_embeds(client.discord_config.embed, multipart_data)
+
+    if image := client.discord_config.image:
         multipart_data[f"files[{1 if embeds and embeds[0].image else 0}]"] = ("image.png", image, "image/png")
 
-    url = f"https://discord.com/api/v10/channels/{discord_config.channel_id}/messages"
+    url = f"https://discord.com/api/v10/channels/{client.discord_config.channel_id}/messages"
     headers = {
-        "Authorization": f"Bot {discord_config.api_token.get_secret_value()}",
+        "Authorization": f"Bot {client.discord_config.api_token.get_secret_value()}",
     }
 
     payload = DiscordSendMessageRequest(
-        content=_get_message_text(discord_config),
+        content=_get_message_text(client.discord_config),
         embeds=embeds if embeds else None,
     ).model_dump()
 
