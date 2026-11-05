@@ -61,12 +61,16 @@ def get_platform_configs(
         embed=discord_embed,
     )
 
-    vk_config = VKConfig()  # TODO: add vk support
+    vk_config = VKConfig(
+        api_token=settings.vk.api_token.get_secret_value(),
+        group_id=settings.vk.chat_id,
+        message_text=notification.text,
+    )
 
     return telegram_config, discord_config, vk_config
 
 
-def format_report(report: SendReport) -> str:  # TODO: add tests
+def format_report(report: SendReport) -> str:
     return REPORT_TEMPLATE.format(
         report="\n".join([
             "{} {}{}".format(

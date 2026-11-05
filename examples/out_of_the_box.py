@@ -22,7 +22,7 @@ async def main() -> None:
     report = await send_notifications(
         discord_config=discord_config,
         telegram_config=telegram_config,
-        # vk_config=vk_config,  # TODO: add vk support
+        vk_config=vk_config,
         ignored_platforms=[Platform.VK],
     )
 

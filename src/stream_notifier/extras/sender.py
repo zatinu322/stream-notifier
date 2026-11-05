@@ -54,13 +54,13 @@ async def send_notifications(
     async with NotifierClient(
         discord_config=discord_config,
         telegram_config=telegram_config,
-        # vk_config=vk_config,  # TODO: Add vk support
+        vk_config=vk_config,
         timeout=REQUESTS_TIMEOUT,
     ) as client:
         for platform_report, async_method in [
             (report.telegram, client.send_telegram),
             (report.discord, client.send_discord),
-            # (report.vk, client.send_vk), TODO: Add vk support
+            (report.vk, client.send_vk),
         ]:
             await _send_notification(platform_report, async_method, ignored_platforms)
 

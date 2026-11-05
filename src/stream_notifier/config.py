@@ -65,4 +65,12 @@ class TelegramConfig(BaseModel):
 
 
 class VKConfig(BaseModel):
+    api_token: SecretStr
+    """VK API token."""
+
+    group_id: int
+    """VK group ID."""
+    message_text: str
+    """Message text."""
+
     model_config = model_config
