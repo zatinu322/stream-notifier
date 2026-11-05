@@ -148,6 +148,7 @@ REPORTS = (
         vk=PlatformReport(
             name="vk",
             status="ignored",
+            error_message="Ignored",
         ),
     ),
     SendReport(
@@ -171,7 +172,7 @@ FORMATTED_REPORTS = (
     "Отчёт об отправке уведомлений.\n\n"
     "✅ Telegram\n"
     "❌ Discord: 403 Forbidden\n"
-    "⛔ Vk\n",
+    "⛔ Vk: Ignored\n",
     "Отчёт об отправке уведомлений.\n\n"
     "✅ Telegram\n"
     "❌ Discord: 403 Forbidden\n"

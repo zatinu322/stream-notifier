@@ -6,10 +6,7 @@ from stream_notifier.config import DiscordConfig, DiscordEmbedConfig, TelegramCo
 from .schemas import Notification, NotifierSettings, SendReport
 from .types import Status
 
-REPORT_TEMPLATE = """Отчёт об отправке уведомлений.
-
-{report}
-"""
+REPORT_TEMPLATE = "Отчёт об отправке уведомлений.\n\n{report}\n"
 
 EMOJI_TO_STATUS = {
     Status.SUCCESS: "✅",
@@ -75,7 +72,7 @@ def format_report(report: SendReport) -> str:  # TODO: add tests
             "{} {}{}".format(
                 EMOJI_TO_STATUS[platform.status],
                 platform.name.value.capitalize(),
-                f": {platform.error_message}" if platform.status == Status.FAILED else "",
+                f": {platform.error_message}" if platform.error_message else "",
             )
             for platform in [report.telegram, report.discord, report.vk]
         ]),

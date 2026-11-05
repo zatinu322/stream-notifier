@@ -19,15 +19,16 @@ REQUESTS_TIMEOUT = 60
 
 async def _send_notification(
     report: PlatformReport,
-    send_coroutine: Callable[..., Awaitable[BaseModel]],
+    send_method: Callable[..., Awaitable[BaseModel]],
     ignored_platforms: list[Platform],
 ) -> None:
     if report.name in ignored_platforms:
         report.status = Status.IGNORED
+        report.error_message = "Ignored."
         return
 
     try:
-        response = await send_coroutine()
+        response = await send_method()
         report.status = Status.SUCCESS
         report.response = response.model_dump()
     except (NotifierHTTPStatusError, NotificationError) as e:
@@ -56,11 +57,11 @@ async def send_notifications(
         # vk_config=vk_config,  # TODO: Add vk support
         timeout=REQUESTS_TIMEOUT,
     ) as client:
-        for platform_report, coroutine in [
+        for platform_report, async_method in [
             (report.telegram, client.send_telegram),
             (report.discord, client.send_discord),
             # (report.vk, client.send_vk), TODO: Add vk support
         ]:
-            await _send_notification(platform_report, coroutine, ignored_platforms)
+            await _send_notification(platform_report, async_method, ignored_platforms)
 
     return report
