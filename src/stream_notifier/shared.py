@@ -13,6 +13,8 @@ response_model_config = ConfigDict(
     populate_by_name=True,
 )
 
+MultipartFormData = dict[str, tuple[str, bytes, str]]
+
 
 def raise_for_status(response: Response) -> None:
     "Check whether response has 2xx status code and raise exception otherwise."

@@ -2,7 +2,7 @@ import pytest
 
 from stream_notifier.config import DiscordConfig, DiscordEmbedConfig
 
-from ..messages import MultipartFormData, _get_discord_embeds, _get_message_text
+from ..messages import MultipartFormData, _get_discord_embeds, _get_image, _get_message_text
 from ..schemas import DiscordEmbed, DiscordEmbedImage
 
 EMBED_CONFIGS = [
@@ -42,17 +42,8 @@ EMBEDS = [
     )],
 ]
 
-MULTIPARTS: list[tuple[MultipartFormData, ...]] = [
-    (
-        {
-            "a": ("b", b"c", "d"),
-        },
-        {
-            "a": ("b", b"c", "d"),
-            "files[0]": ("embed.png", b"a", "image/png"),
-        },
-    ),
-    ({"a": ("b", b"c", "d")}, {"a": ("b", b"c", "d")}),
+MULTIPARTS: list[MultipartFormData] = [
+    {"files[0]": ("embed.png", b"a", "image/png")},
 ]
 
 CONFIGS = [
@@ -95,22 +86,22 @@ TEXT_OUTPUTS = [
 
 
 @pytest.mark.parametrize(
-    "config,multipart,output,mutated_multipart",
+    "config,output_embeds,output_multipart",
     (
-        (None, {}, [], {}),
-        (EMBED_CONFIGS[0], {}, EMBEDS[0], {}),
-        (EMBED_CONFIGS[1], MULTIPARTS[0][0], EMBEDS[1], MULTIPARTS[0][1]),
-        (EMBED_CONFIGS[2], MULTIPARTS[1][0], EMBEDS[2], MULTIPARTS[1][1]),
+        (None, [], {}),
+        (EMBED_CONFIGS[0], EMBEDS[0], {}),
+        (EMBED_CONFIGS[1], EMBEDS[1], MULTIPARTS[0]),
+        (EMBED_CONFIGS[2], EMBEDS[2], {}),
     ),
 )
 def test_discord_embeds(
     config: DiscordEmbedConfig | None,
-    multipart: MultipartFormData,
-    output: list[DiscordEmbed],
-    mutated_multipart: MultipartFormData,
+    output_embeds: list[DiscordEmbed],
+    output_multipart: MultipartFormData,
 ) -> None:
-    assert _get_discord_embeds(config, multipart) == output
-    assert multipart == mutated_multipart
+    embeds, multipart_data = _get_discord_embeds(config)
+    assert embeds == output_embeds
+    assert multipart_data == output_multipart
 
 
 @pytest.mark.parametrize(
@@ -124,3 +115,16 @@ def test_discord_embeds(
 )
 def test_discord_message_text(discord_config: DiscordConfig, output: str) -> None:
     assert _get_message_text(discord_config) == output
+
+
+@pytest.mark.parametrize(
+    ("image,embeds,output"),
+    (
+        (None, [], None),
+        (b"a", [], {"files[0]": ("image.png", b"a", "image/png")}),
+        (b"a", [EMBEDS[1][0]], {"files[1]": ("image.png", b"a", "image/png")}),
+        (b"a", [EMBEDS[1][0], EMBEDS[1][0], EMBEDS[0][0]], {"files[2]": ("image.png", b"a", "image/png")}),
+    ),
+)
+def test_get_image(image: bytes | None, embeds: list[DiscordEmbed], output: MultipartFormData | None) -> None:
+    assert _get_image(image, embeds) == output

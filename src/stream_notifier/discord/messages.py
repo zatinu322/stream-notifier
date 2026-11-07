@@ -11,23 +11,21 @@ from stream_notifier.discord.schemas import (
     DiscordSendMessageResponse,
 )
 from stream_notifier.exceptions import DiscordNotificationError
-from stream_notifier.shared import raise_for_status
+from stream_notifier.shared import MultipartFormData, raise_for_status
 
 if TYPE_CHECKING:
     from stream_notifier.client import NotifierClient
 
-MultipartFormData = dict[str, tuple[str, bytes, str]]
-
 
 def _get_discord_embeds(
     embed_config: DiscordEmbedConfig | None,
-    multipart_data: MultipartFormData,
-) -> list[DiscordEmbed]:
+) -> tuple[list[DiscordEmbed], MultipartFormData]:  # TODO: adjust tests, add multiple embeds
     if not embed_config:
-        return []
+        return [], {}
 
     embed_type = "rich"
     embed_image_url = ""
+    multipart_data: MultipartFormData = {}
     if embed_image := embed_config.image:
         embed_type = "image"
         if isinstance(embed_image, bytes):
@@ -36,14 +34,14 @@ def _get_discord_embeds(
         elif isinstance(embed_image, HttpUrl):
             embed_image_url = str(embed_image)
 
-    return [
-        DiscordEmbed(
-            title=embed_config.title,
-            description=embed_config.description,
-            type=embed_type,
-            image=DiscordEmbedImage(url=embed_image_url) if embed_image_url else None,
-        ),
-    ]
+    embed = DiscordEmbed(
+        title=embed_config.title,
+        description=embed_config.description,
+        type=embed_type,
+        image=DiscordEmbedImage(url=embed_image_url) if embed_image_url else None,
+    )
+
+    return [embed], multipart_data
 
 
 def _get_message_text(discord_config: DiscordConfig) -> str:
@@ -53,15 +51,24 @@ def _get_message_text(discord_config: DiscordConfig) -> str:
     return f"{mentions}\n{discord_config.message_text}" if mentions else discord_config.message_text
 
 
+def _get_image(image: bytes | None, embeds: list[DiscordEmbed]) -> MultipartFormData | None:  # TODO: Add tests
+    if not image:
+        return None
+
+    image_index = len([embed for embed in embeds if embed.image])
+    return {
+        f"files[{image_index}]": ("image.png", image, "image/png"),
+    }
+
+
 async def send_discord_notification(client: "NotifierClient") -> DiscordSendMessageResponse:
     if not client.discord_config:
         raise DiscordNotificationError("No discord config provided.")
 
-    multipart_data: MultipartFormData = {}
-    embeds = _get_discord_embeds(client.discord_config.embed, multipart_data)
+    embeds, multipart_data = _get_discord_embeds(client.discord_config.embed)
 
-    if image := client.discord_config.image:
-        multipart_data[f"files[{1 if embeds and embeds[0].image else 0}]"] = ("image.png", image, "image/png")
+    if image_multipart := _get_image(client.discord_config.image, embeds):
+        multipart_data |= image_multipart
 
     url = f"https://discord.com/api/v10/channels/{client.discord_config.channel_id}/messages"
     headers = {
@@ -70,7 +77,7 @@ async def send_discord_notification(client: "NotifierClient") -> DiscordSendMess
 
     payload = DiscordSendMessageRequest(
         content=_get_message_text(client.discord_config),
-        embeds=embeds if embeds else None,
+        embeds=embeds if embeds else [],
     ).model_dump()
 
     response = await client.request(

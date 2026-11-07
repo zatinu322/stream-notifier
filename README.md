@@ -1,7 +1,7 @@
 <div align="center">
   <h1>stream-notifier</h1>
   <div>
-    <!-- TODO: add link -->
+    <!-- TODO: update link -->
     <a href="https://github.com/zatinu322/stream-notifier/releases/tag/v1.0.0"><img src="https://img.shields.io/badge/Version-v1.0.0-darkgreen?style=for-the-badge" alt="Version"/></a>
     <img src="https://img.shields.io/badge/Release_date-06/11/2026-darkgreen?style=for-the-badge" alt="Latest release"/>
   </div>
@@ -26,9 +26,18 @@
 
 ### Via `uv`
 
+#### Latest version
 ```shell
 uv add "git+https://github.com/zatinu322/stream-notifier@main"  # latest version
 uv add "git+https://github.com/zatinu322/stream-notifier@v1.0.0"  # specific version
+```
+
+#### Specific version
+
+#### Upgrade library
+
+```shell
+uv
 ```
 
 ### Via `pip`

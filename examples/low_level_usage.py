@@ -50,9 +50,9 @@ async def main() -> None:
         timeout=REQUEST_TIMEOUT,
         vk_config=vk_config,
     ) as client:
-        client.send_telegram()
-        client.send_discord()
-        client.send_vk()
+        await client.send_telegram()
+        await client.send_discord()
+        await client.send_vk()
 
 
 if __name__ == "__main__":
