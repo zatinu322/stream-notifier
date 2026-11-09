@@ -9,7 +9,7 @@ from stream_notifier import (
     VKConfig,
 )
 
-REQUEST_TIMEOUT = 60
+REQUEST_TIMEOUT = 15
 
 
 async def main() -> None:

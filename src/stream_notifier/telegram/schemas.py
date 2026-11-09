@@ -65,9 +65,9 @@ class TelegramChat(BaseModel):
 
 class TelegramBaseChatResponse(BaseModel):
     message_id: int
-    from_: TelegramUser = Field(alias="from")
-    chat: TelegramChat
-    date: datetime
+    from_: TelegramUser | None = Field(alias="from")
+    chat: TelegramChat | None
+    date: datetime | None
 
 
 class TelegramSendMessageResponse(TelegramBaseChatResponse):

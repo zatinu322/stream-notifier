@@ -11,7 +11,7 @@ embeds:
     description: I'm waiting for you.
     image: "https://example.com/"  # image path or url
 
-discord_send_text: true
+send_discord_text: true
 
 roles_to_mention:
   - "1270388891739750584"

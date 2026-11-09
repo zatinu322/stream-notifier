@@ -36,13 +36,19 @@ uv add "git+https://github.com/zatinu322/stream-notifier@v1.0.0"  # specific ver
 
 #### Upgrade library
 
+До последней актуальной версии:
 ```shell
-uv
+uv lock --upgrade-package stream-notifier
+```
+
+До конкретной версии:
+```sh
+uv lock --upgrade-package stream-notifier==2.0.0
 ```
 
 ### Via `pip`
 
-```shell
+```sh
 pip install "git+https://github.com/zatinu322/stream-notifier@main"
 ```
 
