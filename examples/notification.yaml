@@ -6,10 +6,12 @@ image: examples/example.png
 # image path or url
 image_spoiler: false
 
-embed_title: Stream started!
-embed_description: I'm waiting for you.
-embed_image: "https://example.com/"
-# image path or url
+embeds:
+  - title: Stream started!
+    description: I'm waiting for you.
+    image: "https://example.com/"  # image path or url
+
+send_discord_text: true
 
 roles_to_mention:
   - "1270388891739750584"

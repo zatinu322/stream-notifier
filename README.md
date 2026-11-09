@@ -1,9 +1,9 @@
 <div align="center">
   <h1>stream-notifier</h1>
   <div>
-    <!-- TODO: add link -->
-    <a href="https://github.com/zatinu322/stream-notifier/releases/tag/v1.0.0"><img src="https://img.shields.io/badge/Version-v1.0.0-darkgreen?style=for-the-badge" alt="Version"/></a>
-    <img src="https://img.shields.io/badge/Release_date-06/11/2026-darkgreen?style=for-the-badge" alt="Latest release"/>
+    <!-- TODO: update link -->
+    <a href="https://github.com/zatinu322/stream-notifier/releases/tag/v2.0.0"><img src="https://img.shields.io/badge/Version-v2.0.0-darkgreen?style=for-the-badge" alt="Version"/></a>
+    <img src="https://img.shields.io/badge/Release_date-TBA-darkgreen?style=for-the-badge" alt="Latest release"/>
   </div>
 
   <p>Python library for sending messages to social media platforms. Supports Discord, Telegram and VK.</p>
@@ -26,14 +26,29 @@
 
 ### Via `uv`
 
+#### Latest version
 ```shell
 uv add "git+https://github.com/zatinu322/stream-notifier@main"  # latest version
 uv add "git+https://github.com/zatinu322/stream-notifier@v1.0.0"  # specific version
 ```
 
+#### Specific version
+
+#### Upgrade library
+
+До последней актуальной версии:
+```shell
+uv lock --upgrade-package stream-notifier
+```
+
+До конкретной версии:
+```sh
+uv lock --upgrade-package stream-notifier==2.0.0
+```
+
 ### Via `pip`
 
-```shell
+```sh
 pip install "git+https://github.com/zatinu322/stream-notifier@main"
 ```
 
@@ -56,9 +71,11 @@ Create [notification YAML-config](./examples/notification.yaml):
 text: Message text
 image: Url or path to image
 image_spoiler: Hide image with spoiler (Telegram)
-embed_title: Discord embed title
-embed_description: Discord embed description
-embed_image: Url or path to image
+embeds:
+  - title: Discord embed title
+    description: Discord embed description
+    image: Url or path to image  # image path or url
+discord_send_text: Remove message text from Discord message (true/false)
 roles_to_mention: Discord role ID's to mention in message
 users_to_mention: Discord user ID's to mention in message
 ```

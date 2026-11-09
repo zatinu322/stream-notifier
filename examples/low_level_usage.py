@@ -9,7 +9,7 @@ from stream_notifier import (
     VKConfig,
 )
 
-REQUEST_TIMEOUT = 60
+REQUEST_TIMEOUT = 15
 
 
 async def main() -> None:
@@ -29,11 +29,11 @@ async def main() -> None:
         channel_id=123,
         message_text=message_text,
         image=image_bytes,
-        embed=DiscordEmbedConfig(
+        embeds=[DiscordEmbedConfig(
             title="Hello!",
             description="World!",
             image="https://example.com",
-        ),
+        )],
         roles_to_mention=["123", "456"],
         users_to_mention=["789", "123"],
     )
@@ -50,9 +50,9 @@ async def main() -> None:
         timeout=REQUEST_TIMEOUT,
         vk_config=vk_config,
     ) as client:
-        client.send_telegram()
-        client.send_discord()
-        client.send_vk()
+        await client.send_telegram()
+        await client.send_discord()
+        await client.send_vk()
 
 
 if __name__ == "__main__":

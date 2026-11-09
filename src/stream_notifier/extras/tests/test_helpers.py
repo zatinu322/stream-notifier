@@ -3,8 +3,8 @@ from pydantic import HttpUrl
 
 from stream_notifier.config import DiscordConfig, DiscordEmbedConfig
 
-from ..helpers import _get_discord_embed, format_report, get_platform_configs
-from ..schemas import Notification, NotifierSettings, PlatformReport, PlatformSettings, SendReport
+from ..helpers import _get_discord_embeds, format_report, get_platform_configs
+from ..schemas import DiscordEmbed, Notification, NotifierSettings, PlatformReport, PlatformSettings, SendReport
 
 platform_settings = PlatformSettings(api_token="token", chat_id=1)
 
@@ -31,24 +31,40 @@ NOTIFICATIONS = (
         image=HttpUrl("https://example.com"),
     ),
     Notification(
-        embed_title="Title",
+        embeds=[DiscordEmbed(title="Title")],
     ),
     Notification(
-        embed_description="Description",
+        embeds=[DiscordEmbed(description="Description")],
     ),
     Notification(
         text="Text!",
-        embed_image="ID",
+        embeds=[DiscordEmbed(image="ID")],
     ),
     Notification(
-        embed_image=b"a",
+        embeds=[DiscordEmbed(image=b"a")],
     ),
     Notification(
-        embed_image=HttpUrl("https://example.com"),
+        embeds=[DiscordEmbed(image=HttpUrl("https://example.com"))],
     ),
     Notification(
         image=b"a",
-        embed_image=b"a",
+        embeds=[DiscordEmbed(image=b"a")],
+    ),
+    Notification(
+        text="Text!",
+        embeds=[
+            DiscordEmbed(image="ID"),
+            DiscordEmbed(title="Title", image=b"a"),
+            DiscordEmbed(description="Description", image=HttpUrl("https://example.com")),
+        ],
+    ),
+    Notification(
+        text="Text!",
+        image=b"a",
+        embeds=[
+            DiscordEmbed(image=b"a"),
+        ],
+        send_discord_text=False,
     ),
 )
 
@@ -58,49 +74,59 @@ CONFIGS = (
         channel_id=1,
         message_text="Text!",
         image=None,
-        embed=None,
     ),
     DiscordConfig(
         api_token="token",
         channel_id=1,
         message_text="Text!",
         image=b"a",
-        embed=None,
     ),
     DiscordConfig(
         api_token="token",
         channel_id=1,
         message_text="",
         image=b"a",
-        embed=DiscordEmbedConfig(
+        embeds=[DiscordEmbedConfig(
             title="",
             description="",
             image=b"a",
-        ),
+        )],
     ),
 )
 
 EMBED_CONFIGS = (
-    DiscordEmbedConfig(
+    [DiscordEmbedConfig(
         title="Title",
         description="",
         image=None,
-    ),
-    DiscordEmbedConfig(
+    )],
+    [DiscordEmbedConfig(
         title="",
         description="Description",
         image=None,
-    ),
-    DiscordEmbedConfig(
+    )],
+    [DiscordEmbedConfig(
         title="",
         description="",
         image=b"a",
-    ),
-    DiscordEmbedConfig(
+    )],
+    [DiscordEmbedConfig(
         title="",
         description="",
         image="https://example.com",
-    ),
+    )],
+    [
+        DiscordEmbedConfig(
+            title="Title",
+            description="",
+            image=b"a",
+        ),
+        DiscordEmbedConfig(
+            title="",
+            description="Description",
+            image="https://example.com",
+        ),
+    ],
 )
 
 
@@ -112,7 +138,7 @@ EMBED_CONFIGS = (
         (NOTIFICATIONS[2], CONFIGS[1]),
         (NOTIFICATIONS[3], CONFIGS[0]),
         (NOTIFICATIONS[9], CONFIGS[2]),
-
+        (NOTIFICATIONS[11], CONFIGS[2]),
     ),
 )
 def test_discord_configs(notification: Notification, output: DiscordConfig) -> None:
@@ -125,13 +151,14 @@ def test_discord_configs(notification: Notification, output: DiscordConfig) -> N
     (
         (NOTIFICATIONS[4], EMBED_CONFIGS[0]),
         (NOTIFICATIONS[5], EMBED_CONFIGS[1]),
-        (NOTIFICATIONS[6], None),
+        (NOTIFICATIONS[6], []),
         (NOTIFICATIONS[7], EMBED_CONFIGS[2]),
         (NOTIFICATIONS[8], EMBED_CONFIGS[3]),
+        (NOTIFICATIONS[10], EMBED_CONFIGS[4]),
     ),
 )
 def test_discord_embed_config(notification: Notification, output: DiscordEmbedConfig) -> None:
-    assert _get_discord_embed(notification) == output
+    assert _get_discord_embeds(notification) == output
 
 
 REPORTS = (

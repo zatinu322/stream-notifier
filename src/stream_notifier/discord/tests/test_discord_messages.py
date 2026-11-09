@@ -2,24 +2,60 @@ import pytest
 
 from stream_notifier.config import DiscordConfig, DiscordEmbedConfig
 
-from ..messages import MultipartFormData, _get_discord_embeds, _get_message_text
+from ..messages import MultipartFormData, _get_discord_embeds, _get_image, _get_message_text
 from ..schemas import DiscordEmbed, DiscordEmbedImage
 
 EMBED_CONFIGS = [
-    DiscordEmbedConfig(
+    [DiscordEmbedConfig(
         title="Title",
         description="Description",
-    ),
-    DiscordEmbedConfig(
+    )],
+    [DiscordEmbedConfig(
         title="Title",
         description="Description",
         image=b"a",
-    ),
-    DiscordEmbedConfig(
+    )],
+    [DiscordEmbedConfig(
         title="Title",
         description="Description",
         image="https://example.com/",
-    ),
+    )],
+    [
+        DiscordEmbedConfig(
+            title="Title",
+            description="Description",
+            image=b"a",
+        ),
+        DiscordEmbedConfig(
+            title="Title2",
+            description="Description2",
+            image=b"b",
+        ),
+    ],
+    [
+        DiscordEmbedConfig(
+            title="Title",
+            description="Description",
+            image="https://example.com/",
+        ),
+        DiscordEmbedConfig(
+            title="Title2",
+            description="Description2",
+            image="https://example.com/1",
+        ),
+    ],
+    [
+        DiscordEmbedConfig(
+            title="Title",
+            description="Description",
+            image=b"a",
+        ),
+        DiscordEmbedConfig(
+            title="Title",
+            description="Description",
+            image="https://example.com/",
+        ),
+    ],
 ]
 
 EMBEDS = [
@@ -32,7 +68,7 @@ EMBEDS = [
         title="Title",
         description="Description",
         type="image",
-        image=DiscordEmbedImage(url="attachment://embed.png"),
+        image=DiscordEmbedImage(url="attachment://embed0.png"),
     )],
     [DiscordEmbed(
         title="Title",
@@ -40,19 +76,56 @@ EMBEDS = [
         type="image",
         image=DiscordEmbedImage(url="https://example.com/"),
     )],
+    [
+        DiscordEmbed(
+            title="Title",
+            description="Description",
+            type="image",
+            image=DiscordEmbedImage(url="attachment://embed0.png"),
+        ),
+        DiscordEmbed(
+            title="Title2",
+            description="Description2",
+            type="image",
+            image=DiscordEmbedImage(url="attachment://embed1.png"),
+        ),
+    ],
+    [
+        DiscordEmbed(
+            title="Title",
+            description="Description",
+            type="image",
+            image=DiscordEmbedImage(url="https://example.com/"),
+        ),
+        DiscordEmbed(
+            title="Title2",
+            description="Description2",
+            type="image",
+            image=DiscordEmbedImage(url="https://example.com/1"),
+        ),
+    ],
+    [
+        DiscordEmbed(
+            title="Title",
+            description="Description",
+            type="image",
+            image=DiscordEmbedImage(url="attachment://embed0.png"),
+        ),
+        DiscordEmbed(
+            title="Title",
+            description="Description",
+            type="image",
+            image=DiscordEmbedImage(url="https://example.com/"),
+        ),
+    ],
 ]
 
-MULTIPARTS: list[tuple[MultipartFormData, ...]] = [
-    (
-        {
-            "a": ("b", b"c", "d"),
-        },
-        {
-            "a": ("b", b"c", "d"),
-            "files[0]": ("embed.png", b"a", "image/png"),
-        },
-    ),
-    ({"a": ("b", b"c", "d")}, {"a": ("b", b"c", "d")}),
+MULTIPARTS: list[MultipartFormData] = [
+    {"files[0]": ("embed0.png", b"a", "image/png")},
+    {
+        "files[0]": ("embed0.png", b"a", "image/png"),
+        "files[1]": ("embed1.png", b"b", "image/png"),
+    },
 ]
 
 CONFIGS = [
@@ -95,22 +168,25 @@ TEXT_OUTPUTS = [
 
 
 @pytest.mark.parametrize(
-    "config,multipart,output,mutated_multipart",
+    "config,output_embeds,output_multipart",
     (
-        (None, {}, [], {}),
-        (EMBED_CONFIGS[0], {}, EMBEDS[0], {}),
-        (EMBED_CONFIGS[1], MULTIPARTS[0][0], EMBEDS[1], MULTIPARTS[0][1]),
-        (EMBED_CONFIGS[2], MULTIPARTS[1][0], EMBEDS[2], MULTIPARTS[1][1]),
+        ([], [], {}),
+        (EMBED_CONFIGS[0], EMBEDS[0], {}),
+        (EMBED_CONFIGS[1], EMBEDS[1], MULTIPARTS[0]),
+        (EMBED_CONFIGS[2], EMBEDS[2], {}),
+        (EMBED_CONFIGS[3], EMBEDS[3], MULTIPARTS[1]),
+        (EMBED_CONFIGS[4], EMBEDS[4], {}),
+        (EMBED_CONFIGS[5], EMBEDS[5], MULTIPARTS[0]),
     ),
 )
 def test_discord_embeds(
-    config: DiscordEmbedConfig | None,
-    multipart: MultipartFormData,
-    output: list[DiscordEmbed],
-    mutated_multipart: MultipartFormData,
+    config: list[DiscordEmbedConfig],
+    output_embeds: list[DiscordEmbed],
+    output_multipart: MultipartFormData,
 ) -> None:
-    assert _get_discord_embeds(config, multipart) == output
-    assert multipart == mutated_multipart
+    embeds, multipart_data = _get_discord_embeds(config)
+    assert embeds == output_embeds
+    assert multipart_data == output_multipart
 
 
 @pytest.mark.parametrize(
@@ -124,3 +200,16 @@ def test_discord_embeds(
 )
 def test_discord_message_text(discord_config: DiscordConfig, output: str) -> None:
     assert _get_message_text(discord_config) == output
+
+
+@pytest.mark.parametrize(
+    ("image,embeds,output"),
+    (
+        (None, [], None),
+        (b"a", [], {"files[0]": ("image.png", b"a", "image/png")}),
+        (b"a", [EMBEDS[1][0]], {"files[1]": ("image.png", b"a", "image/png")}),
+        (b"a", [EMBEDS[1][0], EMBEDS[1][0], EMBEDS[0][0]], {"files[2]": ("image.png", b"a", "image/png")}),
+    ),
+)
+def test_get_image(image: bytes | None, embeds: list[DiscordEmbed], output: MultipartFormData | None) -> None:
+    assert _get_image(image, embeds) == output

@@ -22,19 +22,19 @@ def load_notification_from_yaml(notification_path: str) -> Notification:
     return Notification.model_validate(notification)
 
 
-def _get_discord_embed(notification: Notification) -> DiscordEmbedConfig | None:
-    title = notification.embed_title
-    description = notification.embed_description
-    image = notification.embed_image if isinstance(notification.embed_image, (HttpUrl, bytes)) else None
+def _get_discord_embeds(notification: Notification) -> list[DiscordEmbedConfig]:
+    if not notification.embeds:
+        return []
 
-    if not (title or description or image):
-        return None
+    embeds = [
+        DiscordEmbedConfig(
+            title=embed.title,
+            description=embed.description,
+            image=embed.image if isinstance(embed.image, (HttpUrl, bytes)) else None,
+        ) for embed in notification.embeds
+    ]
 
-    return DiscordEmbedConfig(
-        title=notification.embed_title,
-        description=notification.embed_description,
-        image=image,
-    )
+    return [embed for embed in embeds if any((embed.title, embed.description, embed.image))]
 
 
 def get_platform_configs(
@@ -49,16 +49,16 @@ def get_platform_configs(
         has_spoiler=notification.image_spoiler,
     )
 
-    discord_embed = _get_discord_embed(notification)
+    discord_embeds = _get_discord_embeds(notification)
 
     discord_config = DiscordConfig(
         api_token=settings.discord.api_token.get_secret_value(),
         channel_id=settings.discord.chat_id,
-        message_text=notification.text,
+        message_text=notification.text if notification.send_discord_text else '',
         image=notification.image if isinstance(notification.image, bytes) else None,
         roles_to_mention=notification.roles_to_mention,
         users_to_mention=notification.users_to_mention,
-        embed=discord_embed,
+        embeds=discord_embeds,
     )
 
     vk_config = VKConfig(
