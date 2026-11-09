@@ -44,3 +44,35 @@ def test_invalid_image() -> None:
 
     with pytest.raises(ValidationError):
         Notification(embeds=[DiscordEmbed(image=1)])
+
+
+@pytest.mark.parametrize(
+    "text,send_text,image,embeds",
+    (
+        ("text", True, None, []),
+        ("text", False, b"a", []),
+        ("text", False, None, [DiscordEmbed(title="Title")]),
+    ),
+)
+def test_omit_message_ok(
+    text: str,
+    send_text: bool,
+    image: str | HttpUrl | bytes | None,
+    embeds: list[DiscordEmbed],
+) -> None:
+    Notification(
+        text=text,
+        send_discord_text=send_text,
+        image=image,
+        embeds=embeds,
+    )
+
+
+def test_omit_message_raise() -> None:
+    with pytest.raises(ValidationError):
+        Notification(
+            text="text",
+            send_discord_text=False,
+            image=None,
+            embeds=[],
+        )

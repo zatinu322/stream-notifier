@@ -1,10 +1,19 @@
 from typing import Any
 
-from pydantic import BaseModel, ConfigDict, Field, HttpUrl, SecretStr, ValidatorFunctionWrapHandler, field_validator
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    Field,
+    HttpUrl,
+    SecretStr,
+    ValidatorFunctionWrapHandler,
+    field_validator,
+    model_validator,
+)
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from .types import Platform, Status
-from .validators import validate_image
+from .validators import validate_discord_message_text_ommiting, validate_image
 
 model_config = ConfigDict(
     extra="forbid",
@@ -54,6 +63,9 @@ class Notification(BaseModel):
 
     embeds: list[DiscordEmbed] = Field(default_factory=list)
 
+    send_discord_text: bool = True
+    """Omit message text when image or embed is provided."""
+
     roles_to_mention: list[str] = Field(default_factory=list)
     users_to_mention: list[str] = Field(default_factory=list)
 
@@ -63,6 +75,10 @@ class Notification(BaseModel):
     @classmethod
     def get_image(cls, value: str | None, handler: ValidatorFunctionWrapHandler) -> str | bytes | HttpUrl | None:
         return validate_image(value, handler)
+
+    @model_validator(mode="after")
+    def validate_text_sending(self) -> "Notification":
+        return validate_discord_message_text_ommiting(self)
 
 
 class PlatformReport(BaseModel):

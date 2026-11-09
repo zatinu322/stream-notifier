@@ -54,7 +54,7 @@ def get_platform_configs(
     discord_config = DiscordConfig(
         api_token=settings.discord.api_token.get_secret_value(),
         channel_id=settings.discord.chat_id,
-        message_text=notification.text,
+        message_text=notification.text if notification.send_discord_text else '',
         image=notification.image if isinstance(notification.image, bytes) else None,
         roles_to_mention=notification.roles_to_mention,
         users_to_mention=notification.users_to_mention,

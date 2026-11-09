@@ -69,7 +69,7 @@ embeds:
   - title: Discord embed title
     description: Discord embed description
     image: Url or path to image  # image path or url
-
+discord_send_text: Remove message text from Discord message (true/false)
 roles_to_mention: Discord role ID's to mention in message
 users_to_mention: Discord user ID's to mention in message
 ```

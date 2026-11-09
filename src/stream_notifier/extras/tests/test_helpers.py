@@ -58,6 +58,14 @@ NOTIFICATIONS = (
             DiscordEmbed(description="Description", image=HttpUrl("https://example.com")),
         ],
     ),
+    Notification(
+        text="Text!",
+        image=b"a",
+        embeds=[
+            DiscordEmbed(image=b"a"),
+        ],
+        send_discord_text=False,
+    ),
 )
 
 CONFIGS = (
@@ -130,7 +138,7 @@ EMBED_CONFIGS = (
         (NOTIFICATIONS[2], CONFIGS[1]),
         (NOTIFICATIONS[3], CONFIGS[0]),
         (NOTIFICATIONS[9], CONFIGS[2]),
-
+        (NOTIFICATIONS[11], CONFIGS[2]),
     ),
 )
 def test_discord_configs(notification: Notification, output: DiscordConfig) -> None:

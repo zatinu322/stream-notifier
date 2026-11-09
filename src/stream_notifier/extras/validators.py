@@ -1,6 +1,10 @@
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 from pydantic import HttpUrl, ValidatorFunctionWrapHandler
+
+if TYPE_CHECKING:
+    from .schemas import Notification
 
 
 def validate_image(value: str | None, handler: ValidatorFunctionWrapHandler) -> str | bytes | HttpUrl | None:
@@ -18,3 +22,13 @@ def validate_image(value: str | None, handler: ValidatorFunctionWrapHandler) -> 
         return image_path.read_bytes()
 
     return value
+
+
+def validate_discord_message_text_ommiting(model: "Notification") -> "Notification":
+    if model.send_discord_text:
+        return model
+
+    if model.image or model.embeds:
+        return model
+
+    raise ValueError("You should provide image or embed info when sending message text is omitted.")
