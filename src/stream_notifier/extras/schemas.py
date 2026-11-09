@@ -1,10 +1,10 @@
-from pathlib import Path
 from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field, HttpUrl, SecretStr, ValidatorFunctionWrapHandler, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from .types import Platform, Status
+from .validators import validate_image
 
 model_config = ConfigDict(
     extra="forbid",
@@ -34,6 +34,17 @@ class NotifierSettings(BaseSettings):
     model_config = settings_config
 
 
+class DiscordEmbed(BaseModel):
+    title: str = ""
+    description: str = ""
+    image: HttpUrl | bytes | None = None
+
+    @field_validator("image", mode="wrap")
+    @classmethod
+    def get_image(cls, value: str | None, handler: ValidatorFunctionWrapHandler) -> str | bytes | HttpUrl | None:
+        return validate_image(value, handler)
+
+
 class Notification(BaseModel):
     text: str = ""
     """Message text."""
@@ -41,32 +52,17 @@ class Notification(BaseModel):
     """Main image."""
     image_spoiler: bool = False
 
-    embed_title: str = ""
-    embed_description: str = ""
-    embed_image: HttpUrl | bytes | None = None
+    embeds: list[DiscordEmbed] = Field(default_factory=list)
 
     roles_to_mention: list[str] = Field(default_factory=list)
     users_to_mention: list[str] = Field(default_factory=list)
 
     model_config = model_config
 
-    @field_validator("image", "embed_image", mode="wrap")
+    @field_validator("image", mode="wrap")
     @classmethod
     def get_image(cls, value: str | None, handler: ValidatorFunctionWrapHandler) -> str | bytes | HttpUrl | None:
-        if value is None:
-            return None
-
-        if not isinstance(value, str):
-            return handler(value)
-
-        if value.startswith(("http://", "https://")):
-            return HttpUrl(value)
-
-        image_path = Path(value)
-        if image_path.exists():
-            return image_path.read_bytes()
-
-        return value
+        return validate_image(value, handler)
 
 
 class PlatformReport(BaseModel):

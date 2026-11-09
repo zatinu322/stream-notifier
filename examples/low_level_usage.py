@@ -29,11 +29,11 @@ async def main() -> None:
         channel_id=123,
         message_text=message_text,
         image=image_bytes,
-        embed=DiscordEmbedConfig(
+        embeds=[DiscordEmbedConfig(
             title="Hello!",
             description="World!",
             image="https://example.com",
-        ),
+        )],
         roles_to_mention=["123", "456"],
         users_to_mention=["789", "123"],
     )

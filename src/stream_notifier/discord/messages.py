@@ -18,30 +18,32 @@ if TYPE_CHECKING:
 
 
 def _get_discord_embeds(
-    embed_config: DiscordEmbedConfig | None,
+    embed_configs: list[DiscordEmbedConfig],
 ) -> tuple[list[DiscordEmbed], MultipartFormData]:  # TODO: adjust tests, add multiple embeds
-    if not embed_config:
+    if not embed_configs:
         return [], {}
 
-    embed_type = "rich"
-    embed_image_url = ""
     multipart_data: MultipartFormData = {}
-    if embed_image := embed_config.image:
-        embed_type = "image"
-        if isinstance(embed_image, bytes):
-            embed_image_url = "attachment://embed.png"
-            multipart_data["files[0]"] = ("embed.png", embed_image, "image/png")
-        elif isinstance(embed_image, HttpUrl):
-            embed_image_url = str(embed_image)
+    embeds = []
+    for embed_index, embed_config in enumerate(embed_configs):
+        embed_type = "rich"
+        embed_image_url = ""
+        if embed_image := embed_config.image:
+            embed_type = "image"
+            if isinstance(embed_image, bytes):
+                embed_image_url = f"attachment://embed{embed_index}.png"
+                multipart_data[f"files[{embed_index}]"] = (f"embed{embed_index}.png", embed_image, "image/png")
+            elif isinstance(embed_image, HttpUrl):
+                embed_image_url = str(embed_image)
 
-    embed = DiscordEmbed(
-        title=embed_config.title,
-        description=embed_config.description,
-        type=embed_type,
-        image=DiscordEmbedImage(url=embed_image_url) if embed_image_url else None,
-    )
+        embeds.append(DiscordEmbed(
+            title=embed_config.title,
+            description=embed_config.description,
+            type=embed_type,
+            image=DiscordEmbedImage(url=embed_image_url) if embed_image_url else None,
+        ))
 
-    return [embed], multipart_data
+    return embeds, multipart_data
 
 
 def _get_message_text(discord_config: DiscordConfig) -> str:
@@ -65,7 +67,7 @@ async def send_discord_notification(client: "NotifierClient") -> DiscordSendMess
     if not client.discord_config:
         raise DiscordNotificationError("No discord config provided.")
 
-    embeds, multipart_data = _get_discord_embeds(client.discord_config.embed)
+    embeds, multipart_data = _get_discord_embeds(client.discord_config.embeds)
 
     if image_multipart := _get_image(client.discord_config.image, embeds):
         multipart_data |= image_multipart

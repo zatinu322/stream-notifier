@@ -30,8 +30,8 @@ class DiscordConfig(BaseModel):
     image: bytes | None = None
     """Discord message image."""
 
-    embed: DiscordEmbedConfig | None = None
-    """Discord embed."""
+    embeds: list[DiscordEmbedConfig] = Field(default_factory=list)
+    """Discord embeds."""
 
     roles_to_mention: list[str] = Field(default_factory=list)
     """Roles to be mentioned in Discord message."""
@@ -42,7 +42,7 @@ class DiscordConfig(BaseModel):
 
     @model_validator(mode="after")
     def validate_message_content(self) -> Self:
-        if not (self.message_text or self.image or self.embed):
+        if not (self.message_text or self.image or self.embeds):
             raise ValueError("Message content can not be empty.")
         return self
 

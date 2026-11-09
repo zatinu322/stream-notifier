@@ -6,20 +6,56 @@ from ..messages import MultipartFormData, _get_discord_embeds, _get_image, _get_
 from ..schemas import DiscordEmbed, DiscordEmbedImage
 
 EMBED_CONFIGS = [
-    DiscordEmbedConfig(
+    [DiscordEmbedConfig(
         title="Title",
         description="Description",
-    ),
-    DiscordEmbedConfig(
+    )],
+    [DiscordEmbedConfig(
         title="Title",
         description="Description",
         image=b"a",
-    ),
-    DiscordEmbedConfig(
+    )],
+    [DiscordEmbedConfig(
         title="Title",
         description="Description",
         image="https://example.com/",
-    ),
+    )],
+    [
+        DiscordEmbedConfig(
+            title="Title",
+            description="Description",
+            image=b"a",
+        ),
+        DiscordEmbedConfig(
+            title="Title2",
+            description="Description2",
+            image=b"b",
+        ),
+    ],
+    [
+        DiscordEmbedConfig(
+            title="Title",
+            description="Description",
+            image="https://example.com/",
+        ),
+        DiscordEmbedConfig(
+            title="Title2",
+            description="Description2",
+            image="https://example.com/1",
+        ),
+    ],
+    [
+        DiscordEmbedConfig(
+            title="Title",
+            description="Description",
+            image=b"a",
+        ),
+        DiscordEmbedConfig(
+            title="Title",
+            description="Description",
+            image="https://example.com/",
+        ),
+    ],
 ]
 
 EMBEDS = [
@@ -32,7 +68,7 @@ EMBEDS = [
         title="Title",
         description="Description",
         type="image",
-        image=DiscordEmbedImage(url="attachment://embed.png"),
+        image=DiscordEmbedImage(url="attachment://embed0.png"),
     )],
     [DiscordEmbed(
         title="Title",
@@ -40,10 +76,56 @@ EMBEDS = [
         type="image",
         image=DiscordEmbedImage(url="https://example.com/"),
     )],
+    [
+        DiscordEmbed(
+            title="Title",
+            description="Description",
+            type="image",
+            image=DiscordEmbedImage(url="attachment://embed0.png"),
+        ),
+        DiscordEmbed(
+            title="Title2",
+            description="Description2",
+            type="image",
+            image=DiscordEmbedImage(url="attachment://embed1.png"),
+        ),
+    ],
+    [
+        DiscordEmbed(
+            title="Title",
+            description="Description",
+            type="image",
+            image=DiscordEmbedImage(url="https://example.com/"),
+        ),
+        DiscordEmbed(
+            title="Title2",
+            description="Description2",
+            type="image",
+            image=DiscordEmbedImage(url="https://example.com/1"),
+        ),
+    ],
+    [
+        DiscordEmbed(
+            title="Title",
+            description="Description",
+            type="image",
+            image=DiscordEmbedImage(url="attachment://embed0.png"),
+        ),
+        DiscordEmbed(
+            title="Title",
+            description="Description",
+            type="image",
+            image=DiscordEmbedImage(url="https://example.com/"),
+        ),
+    ],
 ]
 
 MULTIPARTS: list[MultipartFormData] = [
-    {"files[0]": ("embed.png", b"a", "image/png")},
+    {"files[0]": ("embed0.png", b"a", "image/png")},
+    {
+        "files[0]": ("embed0.png", b"a", "image/png"),
+        "files[1]": ("embed1.png", b"b", "image/png"),
+    },
 ]
 
 CONFIGS = [
@@ -88,14 +170,17 @@ TEXT_OUTPUTS = [
 @pytest.mark.parametrize(
     "config,output_embeds,output_multipart",
     (
-        (None, [], {}),
+        ([], [], {}),
         (EMBED_CONFIGS[0], EMBEDS[0], {}),
         (EMBED_CONFIGS[1], EMBEDS[1], MULTIPARTS[0]),
         (EMBED_CONFIGS[2], EMBEDS[2], {}),
+        (EMBED_CONFIGS[3], EMBEDS[3], MULTIPARTS[1]),
+        (EMBED_CONFIGS[4], EMBEDS[4], {}),
+        (EMBED_CONFIGS[5], EMBEDS[5], MULTIPARTS[0]),
     ),
 )
 def test_discord_embeds(
-    config: DiscordEmbedConfig | None,
+    config: list[DiscordEmbedConfig],
     output_embeds: list[DiscordEmbed],
     output_multipart: MultipartFormData,
 ) -> None:
